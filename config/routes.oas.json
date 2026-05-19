@@ -20,23 +20,119 @@
     }
   ],
   "tags": [
-    { "name": "Data", "description": "Dynamic niche data lookup" },
-    { "name": "Discovery", "description": "AI agent discovery" }
+    { "name": "Logistics",   "description": "Border wait times, port codes, lane status, freight compliance" },
+    { "name": "Healthcare",  "description": "ICD-10 codes, CPT codes, HIPAA compliance, billing rules" },
+    { "name": "Real Estate", "description": "Zoning codes, building permits, tax credits, compliance rules" },
+    { "name": "Finance",     "description": "SEC filings, ESG metrics, ISO controls, audit data" },
+    { "name": "Discovery",   "description": "AI agent discovery and health check" }
   ],
   "paths": {
+
+    "/mcp/logistics": {
+      "get": {
+        "tags": ["Logistics"],
+        "summary": "List all logistics niches",
+        "operationId": "listLogistics",
+        "parameters": [
+          { "name": "limit",  "in": "query", "schema": { "type": "integer", "default": 50,  "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of logistics niche IDs" }
+        },
+        "x-zuplo-route": {
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
+          },
+          "policies": { "inbound": ["monetization-inbound"] }
+        }
+      }
+    },
+
+    "/mcp/healthcare": {
+      "get": {
+        "tags": ["Healthcare"],
+        "summary": "List all healthcare niches",
+        "operationId": "listHealthcare",
+        "parameters": [
+          { "name": "limit",  "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of healthcare niche IDs" }
+        },
+        "x-zuplo-route": {
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
+          },
+          "policies": { "inbound": ["monetization-inbound"] }
+        }
+      }
+    },
+
+    "/mcp/realestate": {
+      "get": {
+        "tags": ["Real Estate"],
+        "summary": "List all real estate niches",
+        "operationId": "listRealEstate",
+        "parameters": [
+          { "name": "limit",  "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of real estate niche IDs" }
+        },
+        "x-zuplo-route": {
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
+          },
+          "policies": { "inbound": ["monetization-inbound"] }
+        }
+      }
+    },
+
+    "/mcp/finance": {
+      "get": {
+        "tags": ["Finance"],
+        "summary": "List all finance niches",
+        "operationId": "listFinance",
+        "parameters": [
+          { "name": "limit",  "in": "query", "schema": { "type": "integer", "default": 50, "maximum": 100 } },
+          { "name": "offset", "in": "query", "schema": { "type": "integer", "default": 0 } }
+        ],
+        "responses": {
+          "200": { "description": "List of finance niche IDs" }
+        },
+        "x-zuplo-route": {
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
+          },
+          "policies": { "inbound": ["monetization-inbound"] }
+        }
+      }
+    },
+
     "/mcp/{niche_id}": {
       "get": {
-        "tags": ["Data"],
+        "tags": ["Logistics"],
         "summary": "Get niche data by ID",
         "operationId": "getNicheById",
-        "description": "Returns telemetry and compliance data for a given niche ID. Example IDs: 450 (logistics), 1 (real estate).",
+        "description": "Returns full telemetry and compliance data for a given niche ID. Example: logistics-niche-1, healthcare-niche-1.",
         "parameters": [
           {
             "name": "niche_id",
             "in": "path",
             "required": true,
             "schema": { "type": "string" },
-            "description": "The numeric niche ID (e.g. 450)"
+            "description": "The niche ID (e.g. logistics-niche-1)"
           }
         ],
         "responses": {
@@ -47,8 +143,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "status":         { "type": "string", "example": "SUCCESS" },
-                    "niche":          { "type": "string", "example": "logistics" },
+                    "status":         { "type": "string",  "example": "SUCCESS" },
+                    "category":       { "type": "string",  "example": "logistics" },
+                    "niche":          { "type": "string",  "example": "Automated AI Compliance Dataset Matrix: LOGISTICS Protocol Code 1" },
                     "telemetry_data": { "type": "object" },
                     "mcp_context":    { "type": "object" }
                   }
@@ -63,20 +160,19 @@
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://ai-data-vault.onrender.com"
-            }
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
           },
           "policies": { "inbound": ["monetization-inbound"] }
         }
       }
     },
+
     "/llms.txt": {
       "get": {
         "tags": ["Discovery"],
         "summary": "AI agent discovery file",
         "operationId": "getLlmsTxt",
-        "description": "Returns a plain text discovery file for AI agents and LLMs to understand this API.",
+        "description": "Returns a plain text discovery file for AI agents and LLMs.",
         "responses": {
           "200": { "description": "Discovery file returned" }
         },
@@ -84,14 +180,33 @@
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://ai-data-vault.onrender.com"
-            }
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
+          },
+          "policies": { "inbound": [] }
+        }
+      }
+    },
+
+    "/health": {
+      "get": {
+        "tags": ["Discovery"],
+        "summary": "Health check",
+        "operationId": "healthCheck",
+        "description": "Returns ok status. Use for uptime monitoring.",
+        "responses": {
+          "200": { "description": "Service is healthy" }
+        },
+        "x-zuplo-route": {
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": { "baseUrl": "https://ai-data-vault.onrender.com" }
           },
           "policies": { "inbound": [] }
         }
       }
     }
+
   },
   "components": {
     "securitySchemes": {
