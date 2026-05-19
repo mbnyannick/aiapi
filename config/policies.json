@@ -1,0 +1,18 @@
+{
+  "policies": [
+    {
+      "handler": {
+        "export": "MonetizationInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "cacheTtlSeconds": 60,
+          "meters": {
+            "api_requests": 1
+          }
+        }
+      },
+      "name": "monetization-inbound",
+      "policyType": "monetization-inbound"
+    }
+  ]
+}
